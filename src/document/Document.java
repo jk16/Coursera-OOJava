@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import application.VowelState;
 
 public abstract class Document {
 
@@ -52,19 +51,39 @@ public abstract class Document {
 	// next week when we implement the EfficientDocument class.
 	protected int countSyllables(String word)
 	{
-		// TODO: Implement this method so that you can call it from the 
-	    /*
-	     * Return number is syllables in a word
-	     **Syllable: contigous sequence of 1 or more vowels 
-	     ***exception: lone "e" at the end of a word UNLESS the word 
-	     ***has no other vowels. 	
-	     */
-		VowelState w = new VowelState(word);
-		System.out.println(w);
+        // TODO: Implement this method so that you can call it from the 
+        /*
+         * Return number is syllables in a word
+         **Syllable: contigous sequence of 1 or more vowels 
+         ***exception: lone "e" at the end of a word UNLESS the word 
+         ***has no other vowels.    
+         */
+        
+        boolean vowelState = isVowel(word.charAt(0)); //get initial state
+        System.out.println(vowelState);
+        int syllables = vowelState?1:0; //initialize counter based off initial state
+        for (char c : word.toCharArray()) {
+        	//for each word if the state of the character is not equal to the previous state 
+        	///if its a vowel increment the counter
+        	///update the vowel state
+            if (isVowel(c) != vowelState) {
+                if(isVowel(c)) {
+                    syllables++;
+                }
+                vowelState = isVowel(c);
+            }
+        }
+        return syllables;
+    }
+    
+    private boolean isVowel(char c) 
+    {
+    	return "aeiouy".indexOf(Character.toLowerCase(c)) != -1;
+    }
 		
 		
-	    return 0;
-	}
+	    
+	
 	
 	/** A method for testing
 	 * 
