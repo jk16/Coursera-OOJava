@@ -65,7 +65,6 @@ public abstract class Document
          ***has no other vowels.    
          */
         VowelState w = new VowelState(word);
-        System.out.println(w);
         
         
         return 0;
