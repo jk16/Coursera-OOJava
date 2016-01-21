@@ -1,8 +1,8 @@
 package testScripts;
 
 public class Tuple<Letter, VBoolean> { 
-      public final Letter letter; 
-      public final VBoolean vBool; 
+      public Letter letter; 
+      public VBoolean vBool; 
       
       public Tuple(Letter l, VBoolean vBool) { 
         this.letter = l; 
