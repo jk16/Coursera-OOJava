@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import application.VowelState;
+
 public abstract class Document {
 
 	private String text;
@@ -51,8 +53,16 @@ public abstract class Document {
 	protected int countSyllables(String word)
 	{
 		// TODO: Implement this method so that you can call it from the 
-	    // getNumSyllables method in BasicDocument (module 1) and 
-	    // EfficientDocument (module 2).
+	    /*
+	     * Return number is syllables in a word
+	     **Syllable: contigous sequence of 1 or more vowels 
+	     ***exception: lone "e" at the end of a word UNLESS the word 
+	     ***has no other vowels. 	
+	     */
+		VowelState w = new VowelState(word);
+		System.out.println(w);
+		
+		
 	    return 0;
 	}
 	

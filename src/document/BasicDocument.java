@@ -61,7 +61,13 @@ public class BasicDocument extends Document
 	    //TODO: Implement this method.  See the Module 1 support videos 
         // if you need help.
 		//see countSyllables method in Document.java
-        return 0;
+		int syllableCounter = 0;
+		List<String> words = getTokens("[a-zA-Z]+");
+		for (String word: words) {
+			syllableCounter += countSyllables(word);
+		}
+		
+        return syllableCounter;
 	}
 	
 	
