@@ -99,10 +99,6 @@ public abstract class Document {
     private boolean getE(char c) {
     	return "e".indexOf(Character.toLowerCase(c)) != -1;
     }
-    
-		
-		
-	    
 	
 	
 	/** A method for testing
@@ -166,13 +162,14 @@ public abstract class Document {
 	public double getFleschScore()
 	{
 	    // TODO: Implement this method
-		int words = getNumWords();
-		int sentences = getNumSentences();
-		float words_sentences = words / sentences;
+		double words = getNumWords();
+		double sentences = getNumSentences();
+		double words_sentences = (1.015*(words / sentences));
 		
-		int syllables = getNumSyllables();
-		float syllables_words = syllables / words;
-		float FleschScore = (float) (206.835 - 1.015 * words_sentences - 84.6*syllables_words);
+		double syllables = getNumSyllables();
+		double syllables_words = 84.6*(syllables / words);
+		
+		double FleschScore = (206.835 - words_sentences - syllables_words);
 	    return FleschScore;
 	}
 	
