@@ -60,26 +60,46 @@ public abstract class Document {
          */
         
         boolean vowelState = isVowel(word.charAt(0)); //get initial state
-        System.out.println(vowelState);
+        int count_lone_e = 0;
         int syllables = vowelState?1:0; //initialize counter based off initial state
-        for (char c : word.toCharArray()) {
+        char[] wordArray = word.toCharArray();
+        for (int i = 0 ; i< wordArray.length; i++) {
         	//for each word if the state of the character is not equal to the previous state 
         	///if its a vowel increment the counter
         	///update the vowel state
+        	char c = wordArray[i];
             if (isVowel(c) != vowelState) {
                 if(isVowel(c)) {
-                    syllables++;
+                	if (getE(c) ) {
+                		count_lone_e++;
+                	}
+                	else {
+                		syllables++;
+                	}
                 }
                 vowelState = isVowel(c);
             }
+        }
+        
+        if (count_lone_e > 0) {
+        	if(count_lone_e == 1) {
+        		count_lone_e--;
+        	}
+        	System.out.println("count_lone_e = " + count_lone_e);
+        	return syllables + count_lone_e;
         }
         return syllables;
     }
     
     private boolean isVowel(char c) 
     {
-    	return "aeiouy".indexOf(Character.toLowerCase(c)) != -1;
+    	return "aiouye".indexOf(Character.toLowerCase(c)) != -1;
     }
+    
+    private boolean getE(char c) {
+    	return "e".indexOf(Character.toLowerCase(c)) != -1;
+    }
+    
 		
 		
 	    
