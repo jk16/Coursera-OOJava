@@ -166,7 +166,14 @@ public abstract class Document {
 	public double getFleschScore()
 	{
 	    // TODO: Implement this method
-	    return 0.0;
+		int words = getNumWords();
+		int sentences = getNumSentences();
+		float words_sentences = words / sentences;
+		
+		int syllables = getNumSyllables();
+		float syllables_words = syllables / words;
+		float FleschScore = (float) (206.835 - 1.015 * words_sentences - 84.6*syllables_words);
+	    return FleschScore;
 	}
 	
 	
