@@ -10,9 +10,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+
 public abstract class Document {
 
 	private String text;
+	private ArrayList<String> t;
 	
 	/** Create a new document from the given text.
 	 * Because this class is abstract, this is used only from subclasses.
@@ -39,7 +41,7 @@ public abstract class Document {
 		while (m.find()) {
 			tokens.add(m.group());
 		}
-		
+		this.t = tokens;
 		return tokens;
 	}
 	
@@ -49,7 +51,37 @@ public abstract class Document {
 	// You will probably NOT need to add a countWords or a countSentences method
 	// here.  The reason we put countSyllables here because we'll use it again
 	// next week when we implement the EfficientDocument class.
-	protected int countSyllables(String word)
+	protected static int countSyllables(String word)
+	{
+	    //System.out.print("Counting syllables in " + word + "...");
+		int numSyllables = 0;
+		boolean newSyllable = true;
+		String vowels = "aeiouy";
+		char[] cArray = word.toCharArray();
+		for (int i = 0; i < cArray.length; i++)
+		{
+		    if (i == cArray.length-1 && Character.toLowerCase(cArray[i]) == 'e' 
+		    		&& newSyllable && numSyllables > 0) {
+		    	//if lastValueInArray and e and newSyllable and more than 0 syllables
+                numSyllables--;
+            }
+		    if (newSyllable && vowels.indexOf(Character.toLowerCase(cArray[i])) >= 0) {
+		    	//if newSyllable and a vowel
+		    		//increase number of syllables
+				newSyllable = false;
+				numSyllables++;
+			}
+			else if (vowels.indexOf(Character.toLowerCase(cArray[i])) < 0) {
+				//if not a vowel 
+					//change state
+				newSyllable = true;
+			}
+		}
+		//System.out.println( "found " + numSyllables);
+		return numSyllables;
+	}
+	
+	protected int _countSyllables(String word)
 	{
         // TODO: Implement this method so that you can call it from the 
         /*
@@ -64,42 +96,47 @@ public abstract class Document {
         int syllables = vowelState?1:0; //initialize counter based off initial state
         char[] wordArray = word.toCharArray();
         for (int i = 0 ; i< wordArray.length; i++) {
-        	//for each word if the state of the character is not equal to the previous state 
-        	///if its a vowel increment the counter
-        	///update the vowel state
         	char c = wordArray[i];
             if (isVowel(c) != vowelState) {
                 if(isVowel(c)) {
-                	if (getE(c) ) {
-                		count_lone_e++;
-                	}
-                	else {
-                		syllables++;
-                	}
+                	syllables++;
+                	
                 }
+                if(eIs(c)) {
+                	count_lone_e++;
+                }
+                
                 vowelState = isVowel(c);
             }
+            
         }
-        
-        if (count_lone_e > 0) {
-        	if(count_lone_e == 1) {
-        		count_lone_e--;
-        	}
-        	System.out.println("count_lone_e = " + count_lone_e);
+     //if last word is an e
+        System.out.println("e == " + count_lone_e);
+        if(word.endsWith("e")) {
+        	// * example: return e+a
+        	// * subtract one e
+        	count_lone_e--;
+        	//return syllables + count_lone_e
         	return syllables + count_lone_e;
         }
-        return syllables;
+     //if last word is NOT e
+        else {
+        	// * examples: return e+a+e
+        	// * return syllables + count_lone_e
+        	return syllables + count_lone_e;
+        }
+        
     }
-    
+ 
     private boolean isVowel(char c) 
     {
-    	return "aiouye".indexOf(Character.toLowerCase(c)) != -1;
+    	return "aiouy".indexOf(Character.toLowerCase(c)) != -1;
     }
     
-    private boolean getE(char c) {
+    private boolean eIs(char c) {
+    	//if its equal to -1 then its not an e
     	return "e".indexOf(Character.toLowerCase(c)) != -1;
     }
-	
 	
 	/** A method for testing
 	 * 
@@ -156,6 +193,10 @@ public abstract class Document {
 	public String getText()
 	{
 		return this.text;
+	}
+	
+	public ArrayList<String> getToken() {
+		return this.t;
 	}
 	
 	/** return the Flesch readability score of this document */
