@@ -16,7 +16,13 @@ public class MyLinkedList<E> extends AbstractList<E> {
 
 	/** Create a new empty LinkedList */
 	public MyLinkedList() {
-		// TODO: Implement this method
+		// TOD: Implement this method
+		size = -1;
+        head = new LLNode<E>(null);
+        tail = new LLNode<E>(null);
+        
+        head.next = tail;
+        tail.prev = head;
 	}
 
 	/**
@@ -25,16 +31,55 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 */
 	public boolean add(E element ) 
 	{
-		// TODO: Implement this method
+		// TOD: Implement this method
+		
+		//initialize newTempNode and lastNode
+		LLNode<E> newTempNode = new LLNode<E>(element);
+		LLNode<E> lastNode = tail.prev;
+		
+		lastNode.next = newTempNode;
+		newTempNode.prev = lastNode;
+		newTempNode.next = tail;
+		tail.prev = newTempNode;
+		
+		size++;
+		
 		return false;
 	}
-
+	
+	public void printLL() {
+		LLNode<E> fromHead = head.next;
+		LLNode<E> fromTail = tail.prev;
+		for(int i=0; i<=size; i++){
+			System.out.println("fromHead = " + fromHead.data);
+			fromHead = fromHead.next;
+			
+		}
+		
+		for(int i=0; i<=size; i++) {
+			System.out.println("from tail = " + fromTail.data);
+			fromTail = fromTail.prev;
+		}
+	}
+	
 	/** Get the element at position index 
 	 * @throws IndexOutOfBoundsException if the index is out of bounds. */
 	public E get(int index) 
 	{
-		// TODO: Implement this method.
-		return null;
+		// TOD: Implement this method.
+		if(index <0 || index>size || size < 0 ) {
+			throw new IndexOutOfBoundsException("Index out of range!!");
+		}
+		
+		LLNode<E> tempNode = head.next;//first Node
+		
+		for(int i=0; i<=index; i++){
+			if(i == index) {
+				break;
+			}
+			tempNode = tempNode.next;
+		}
+		return tempNode.data;
 	}
 
 	/**
@@ -45,14 +90,41 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	public void add(int index, E element ) 
 	{
 		// TODO: Implement this method
+//		If elements exist at that index, you will move elements at that index (and beyond) up,
+		//go to (index - 1) and insert then point the LLInserted to everything else
+		if(index <= 0){
+			throw new IndexOutOfBoundsException("Must be greater than 0!");
+		}
+		LLNode<E> tempNodePrev = head.next; //Head/Tail are sentinel nodes, they do not count as LL
+		LLNode<E> tempNodeAfter;
+		//loop until at index - 1
+		int indexBeforeInsertIndex = index - 1;
+		LLNode<E> newNode = new LLNode<E>(element);
+		for(int i=0; i<indexBeforeInsertIndex; i++) {
+			if(i==indexBeforeInsertIndex) {
+				break;
+			}
+			tempNodePrev = tempNodePrev.next; 
+									
+		}//end for loop
+		//Point to after we point from {..B}-->element
+		tempNodeAfter = tempNodePrev.next;
+		
+		tempNodePrev.next = newNode; //{..B}-->element
+		newNode.prev = tempNodePrev;//{..B}<--element
+		
+		newNode.next = tempNodeAfter;// element -->{D..}
+		tempNodeAfter.prev = newNode; // element<--{D..}
+		size++;
+		
 	}
 
 
 	/** Return the size of the list */
 	public int size() 
 	{
-		// TODO: Implement this method
-		return -1;
+		// TOD: Implement this method
+		return size + 1;
 	}
 
 	/** Remove a node at the specified index and return its data element.
@@ -63,9 +135,34 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 */
 	public E remove(int index) 
 	{
-		// TODO: Implement this method
-		return null;
+		// TOD: Implement this method
+		LLNode<E> TempNodeToRemove = head.next; //first Node
+		LLNode<E> left;
+		LLNode<E> right;
+		
+		if(index > size || index < 0) {
+			throw new IndexOutOfBoundsException("Improper value!");
+		}
+		
+		for(int i=0; i<index-1; i++){
+			if(i == index) {
+				break;
+			}
+			TempNodeToRemove = TempNodeToRemove.next;
+		}
+		//H--> A--> B--> C--> D--> T
+		
+		LLNode<E> prevNode = TempNodeToRemove.prev;
+		LLNode<E>nextNode = TempNodeToRemove.next;
+		
+		prevNode.next = nextNode;
+		nextNode.prev = prevNode;
+		
+		
+		size--;
+		return TempNodeToRemove.data;
 	}
+	
 
 	/**
 	 * Set an index position in the list to a new element
@@ -77,7 +174,19 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	public E set(int index, E element) 
 	{
 		// TODO: Implement this method
-		return null;
+		//return the old value held at that index
+		LLNode<E> temp = head.next;
+		
+		for(int i=0; i<index; i++) {
+			if (index == i) {
+				break;
+			}
+			temp = temp.next;
+		}
+		E old = temp.data;
+		temp.data = element;
+		System.out.println(old);
+		return old;
 	}   
 }
 
@@ -89,7 +198,9 @@ class LLNode<E>
 
 	// TODO: Add any other methods you think are useful here
 	// E.g. you might want to add another constructor
-
+	
+	
+	
 	public LLNode(E e) 
 	{
 		this.data = e;
