@@ -22,6 +22,8 @@ public class MyLinkedListTester {
 	MyLinkedList<Integer> emptyList;
 	MyLinkedList<Integer> longerList;
 	MyLinkedList<Integer> list1;
+	MyLinkedList<String> testAddAtIndex;
+	MyLinkedList<String> testSet;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -42,6 +44,18 @@ public class MyLinkedListTester {
 		list1.add(65);
 		list1.add(21);
 		list1.add(42);
+		
+		testAddAtIndex = new MyLinkedList<String>();
+		testAddAtIndex.add("A");
+		testAddAtIndex.add("B");
+		testAddAtIndex.add("D");
+		testAddAtIndex.add(2,"C");
+		
+		testSet = new MyLinkedList<String>();
+		testSet.add("A");
+		testSet.add("B");
+		testSet.add("C");
+		testSet.set(2, "Z");
 		
 	}
 
@@ -75,6 +89,7 @@ public class MyLinkedListTester {
 		}
 		try {
 			shortList.get(2);
+			shortList.printLL();
 			fail("Check out of bounds");
 		}
 		catch (IndexOutOfBoundsException e) {
@@ -124,6 +139,7 @@ public class MyLinkedListTester {
 	public void testAddEnd()
 	{
         // TODO: implement this test
+//		assertEquals("AddEnd: Check its at the end ", "B", shortList.get(shortList.size()));
 		
 	}
 
@@ -132,7 +148,7 @@ public class MyLinkedListTester {
 	@Test
 	public void testSize()
 	{
-		// TODO: implement this test
+		// TOD: implement this test
 	}
 
 	
@@ -144,15 +160,17 @@ public class MyLinkedListTester {
 	@Test
 	public void testAddAtIndex()
 	{
-        // TODO: implement this test
-		
+        // TODO: implement this test shortList.add(2,"C");
+		assertEquals("AddAtIndex: C should be at i=2 ", "C", testAddAtIndex.get(2) );
 	}
 	
 	/** Test setting an element in the list */
 	@Test
 	public void testSet()
 	{
-	    // TODO: implement this test
+	    // TOD: implement this test
+		//testSet.set(2, "Z");
+		assertEquals("testSet: i=2 --> 'Z' ", "Z", testSet.get(2));
 	    
 	}
 	
