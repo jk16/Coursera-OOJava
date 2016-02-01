@@ -1,5 +1,6 @@
 package textgen;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -13,7 +14,7 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 
 	// The list of words with their next words
 	private List<ListNode> wordList; 
-	
+	private ListNode dummyNode = new ListNode("DUMMY_NODE");
 	// The starting "word"
 	private String starter;
 	
@@ -27,13 +28,62 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 		rnGenerator = generator;
 	}
 	
-	
 	/** Train the generator by adding the sourceText */
 	@Override
 	public void train(String sourceText)
 	{
 		// TODO: Implement this method
+		//init
+		String[] listWords = sourceText.replaceAll("[^a-zA-Z ]", "").split("\\s+");
+		String starter = listWords[0];
+		String prevWord = starter;
+		
+		
+		wordList.add(new ListNode(listWords[0]));
+		boolean prevWord_isInNodeList;
+		ListNode currentNode;
+		
+		String w;
+		for (int i=1; i<listWords.length; i++) {
+			w = listWords[i];
+			
+			//is prevWord inside wordList?
+			boolean prevWordInsideWordList = prevWordInsideWordList(prevWord);
+			if(prevWordInsideWordList) {
+				currentNode = getNode(prevWord);
+				currentNode.addNextWord(w);
+			}
+			else {
+				wordList.add(new ListNode(prevWord));
+				currentNode = getNode(prevWord);
+				currentNode.addNextWord(w);
+			}
+			
+			prevWord = w;
+			
+		}
+			
+	 } //end train
+	public ListNode getNode(String prevWord) {
+		for (ListNode n: wordList) {
+			if(prevWord.toLowerCase().equals(n.getWord().toLowerCase())) {
+				return n;
+			}
+		}
+		return null;
 	}
+	
+	public boolean prevWordInsideWordList(String prevWord) {
+		for (ListNode n : wordList) {
+			if(prevWord.toLowerCase().equals(n.getWord().toLowerCase())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+
 	
 	/** 
 	 * Generate the number of words requested.
@@ -77,10 +127,10 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 		// feed the generator a fixed random value for repeatable behavior
 		MarkovTextGeneratorLoL gen = new MarkovTextGeneratorLoL(new Random(42));
 		String textString = "Hello.  Hello there.  This is a test.  Hello there.  Hello Bob.  Test again.";
-		System.out.println(textString);
+//		System.out.println(textString);
 		gen.train(textString);
-		System.out.println(gen);
-		System.out.println(gen.generateText(20));
+//		System.out.println(gen);
+//		System.out.println(gen.generateText(20));
 		String textString2 = "You say yes, I say no, "+
 				"You say stop, and I say go, go, go, "+
 				"Oh no. You say goodbye and I say hello, hello, hello, "+
@@ -105,16 +155,17 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 				"I don't know why you say goodbye, I say hello, hello, hello, "+
 				"I don't know why you say goodbye, I say hello, hello, hello, "+
 				"I don't know why you say goodbye, I say hello, hello, hello,";
-		System.out.println(textString2);
+//		System.out.println(textString2);
 		gen.retrain(textString2);
-		System.out.println(gen);
-		System.out.println(gen.generateText(20));
+//		System.out.println(gen);
+//		System.out.println(gen.generateText(20));
 	}
 
 }
 
 /** Links a word to the next words in the list 
  * You should use this class in your implementation. */
+
 class ListNode
 {
     // The word that is linking to the next words
@@ -131,7 +182,7 @@ class ListNode
 	
 	public String getWord()
 	{
-		return word;
+		return word.replaceAll("[^a-zA-Z ]", "");
 	}
 
 	public void addNextWord(String nextWord)
