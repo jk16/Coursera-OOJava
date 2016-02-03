@@ -21,14 +21,75 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	{
 		root = new TrieNode();
 	}
+    
 	
+	public TrieNode getRoot() {
+		return root;
+	}
 	
+	public boolean charIsInTrieNode(char c, TrieNode t) {
+		//if its not null then its in the TrieNide so return true
+		return t.getChild(c) != null;
+	}
+    
 	/** Insert a word into the trie.
 	 * For the basic part of the assignment (part 2), you should ignore the word's case.
 	 * That is, you should convert the string to all lower case as you insert it. */
 	public boolean addWord(String word)
 	{
 	    //TODO: Implement this method.
+		
+		
+		//get the first letter of a word
+		char c = Character.toLowerCase(word.charAt(0));
+		//starting from the root, use charInTrieNide to keep track of each TrieNode
+		TrieNode charInTrieNode = root;
+		charInTrieNode.insert(c);
+		charInTrieNode = charInTrieNode.getChild(c);
+		//use finalIndex to determine if its a word
+		boolean finalIndex ;
+		for(int i=1; i<word.length();i++){
+			c = Character.toLowerCase(word.charAt(i));
+			//on the first iteration check to see if the word exists:
+			if(charIsInTrieNode(c, charInTrieNode)) {
+				System.out.println("charIsInTrieNode(c, charInTrieNode)");
+				//use this TrieNode to add to this TrieNode
+				
+				finalIndex = i == (word.length()-1);
+				if(finalIndex) {
+					//get the TrieNode with that char
+					charInTrieNode = charInTrieNode.getChild(c);
+					//set its EndsWord variable to true
+					charInTrieNode.setEndsWord(true);
+				}
+				charInTrieNode = charInTrieNode.getChild(c);
+				c = Character.toLowerCase(word.charAt(i));
+				continue;
+			}
+			//check if letter is inside the TrieNode
+			if (charInTrieNode.getChild(c) == null) {
+				//if its not in the trie node:
+				//	insert character into the trie node
+				charInTrieNode.insert(c);
+				//check if its a word:
+				//	* if its a word then it will be at the last letter
+				finalIndex = i == (word.length()-1);
+				//if its at the last letter
+				if(finalIndex) {
+					//get the TrieNode with that char
+					charInTrieNode = charInTrieNode.getChild(c);
+					//set its EndsWord variable to true
+					charInTrieNode.setEndsWord(true);
+					continue;
+				}
+				//if its not the last letter
+					
+			charInTrieNode = charInTrieNode.getChild(c);
+			charInTrieNode.setEndsWord(false);
+			
+			}
+		}
+		
 	    return false;
 	}
 	
@@ -48,7 +109,27 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	public boolean isWord(String s) 
 	{
 	    // TODO: Implement this method
-		return false;
+        char c = Character.toLowerCase(s.charAt(0));
+        TrieNode currTrieNode = root;
+        currTrieNode.insert(c);
+        currTrieNode = currTrieNode.getChild(c);
+        
+        TrieNode TrieNodeHasChar;
+        for(int i=1; i<s.length();i++) {
+        	c = Character.toLowerCase(s.charAt(i));
+        	TrieNodeHasChar = currTrieNode.getChild(c);
+        	
+        	
+			if(charIsInTrieNode(c, currTrieNode)) {
+//				System.out.println("A TrieNide contains this character: " + c );
+				currTrieNode = currTrieNode.getChild(c);
+				continue;
+			} 
+			else {
+				return false;
+			}
+        }
+		return currTrieNode.endsWord();
 	}
 
 	/** 
