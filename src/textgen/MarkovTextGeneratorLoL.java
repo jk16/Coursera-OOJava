@@ -35,27 +35,40 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 		// TODO: Implement this method
 		//init
 		String[] listWords = sourceText.replaceAll("[^a-zA-Z ]", "").split("\\s+");
+		//split by spaces
+//		String[] listWords = sourceText.split("[\\s]+");
+
+		//initialize
 		String starter = listWords[0];
 		String prevWord = starter;
 		
-		
+		//add a ListNode with the first word in listWords to wordList
 		wordList.add(new ListNode(listWords[0]));
-		boolean prevWord_isInNodeList;
-		ListNode currentNode;
 		
+		ListNode currentNode;
 		String w;
+		///for all the words
 		for (int i=1; i<listWords.length; i++) {
 			w = listWords[i];
 			
 			//is prevWord inside wordList?
 			boolean prevWordInsideWordList = prevWordInsideWordList(prevWord);
+//			if the prevWord is in the wordList:
+//				get prevWord
+//				place "w" after that prevWord
 			if(prevWordInsideWordList) {
 				currentNode = getNode(prevWord);
 				currentNode.addNextWord(w);
 			}
 			else {
+//				prevWord is not in the wordList:
+//				add prevWord to the wordList
+				System.out.println("prevWord is: " + prevWord +" and w = " + w );
 				wordList.add(new ListNode(prevWord));
+//				get the prevWord Node
 				currentNode = getNode(prevWord);
+//				add "w" after the prevWord Node
+//				System.out.println(w);
 				currentNode.addNextWord(w);
 			}
 			
@@ -65,8 +78,11 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 			
 	 } //end train
 	public ListNode getNode(String prevWord) {
+//		for ListNode n in wordList:
 		for (ListNode n: wordList) {
+//			if prevWord == n.getWord():
 			if(prevWord.toLowerCase().equals(n.getWord().toLowerCase())) {
+//				return n;
 				return n;
 			}
 		}
@@ -74,7 +90,9 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	}
 	
 	public boolean prevWordInsideWordList(String prevWord) {
+//		for ListNode n in wordList:
 		for (ListNode n : wordList) {
+//			if prevWord == n.getWord():
 			if(prevWord.toLowerCase().equals(n.getWord().toLowerCase())) {
 				return true;
 			}
@@ -83,6 +101,9 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 		return false;
 	}
 	
+	public List<ListNode> getwordList() {
+		return wordList;
+	}
 
 	
 	/** 
@@ -90,7 +111,45 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	 */
 	@Override
 	public String generateText(int numWords) {
-	    // TODO: Implement this method
+		if(wordList.size() == 0)
+			return null;
+//		set "currWord" to be the starter word
+		starter = wordList.get(0).getWord();
+		String currWord = starter;
+//		set "output" to be ""
+		String outputText = "";
+//		add "currWord" to output
+		ListNode currNode;
+//		while you need more words
+		for(int i=0; i<numWords; i++) {
+//		    find the "node" corresponding to "currWord" in the list
+			currNode = findNode(currWord);
+			if(currNode == null) {
+				//go back to the beggining
+				currNode = findNode(starter);
+			}
+			
+			//if word in currNode is null
+				
+//		    select a random word "w" from the "wordList" for "node"
+			String nextWord = currNode.getRandomNextWord(rnGenerator);
+			System.out.println(currNode.getWord());
+//		    add "w" to the "output"
+			outputText += nextWord + " ";
+//		    set "currWord" to be "w" 
+			currWord = nextWord;
+//		    increment number of words added to the list
+		}
+		return outputText;
+	}
+	
+	private ListNode findNode(String key) {
+		for(ListNode n : wordList) {
+			if(n.getWord().equals(key))
+				return n;
+		}
+		
+		
 		return null;
 	}
 	
@@ -112,6 +171,8 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	public void retrain(String sourceText)
 	{
 		// TODO: Implement this method.
+		wordList = new LinkedList<ListNode>();
+		train(sourceText);
 	}
 	
 	// TODO: Add any private helper methods you need here.
@@ -193,9 +254,13 @@ class ListNode
 	public String getRandomNextWord(Random generator)
 	{
 		// TODO: Implement this method
-	    // The random number generator should be passed from 
-	    // the MarkovTextGeneratorLoL class
-	    return null;
+	    //if there are no words throw an exception
+		boolean noWords = nextWords.size() == 0;
+		if(noWords)
+			return null;
+		
+		int i = generator.nextInt(nextWords.size());
+	    return nextWords.get(i);
 	}
 
 	public String toString()
