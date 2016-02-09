@@ -2,6 +2,7 @@ package spelling;
 
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -37,8 +38,14 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 * That is, you should convert the string to all lower case as you insert it. */
 	public boolean addWord(String word)
 	{
-	    //TODO: Implement this method.
 		
+		if (word.length() == 0) {
+			if(root.endsWord())
+				return false;
+			
+			root.setEndsWord(true);
+			return true;
+		}
 		
 		//get the first letter of a word
 		char c = Character.toLowerCase(word.charAt(0));
@@ -48,6 +55,13 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 		charInTrieNode = charInTrieNode.getChild(c);
 		//use finalIndex to determine if its a word
 		boolean finalIndex ;
+		
+		if(word.length() == 1) {
+			//one letter word
+			charInTrieNode.setEndsWord(true);
+		}
+			
+		
 		for(int i=1; i<word.length();i++){
 			c = Character.toLowerCase(word.charAt(i));
 			//on the first iteration check to see if the word exists:
@@ -66,6 +80,7 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 				c = Character.toLowerCase(word.charAt(i));
 				continue;
 			}
+			
 			//check if letter is inside the TrieNode
 			if (charInTrieNode.getChild(c) == null) {
 				//if its not in the trie node:
@@ -84,13 +99,13 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 				}
 				//if its not the last letter
 					
-			charInTrieNode = charInTrieNode.getChild(c);
-			charInTrieNode.setEndsWord(false);
+				charInTrieNode = charInTrieNode.getChild(c);
+				charInTrieNode.setEndsWord(false);
 			
 			}
 		}
 		
-	    return false;
+	    return true;
 	}
 	
 	/** 
@@ -109,6 +124,10 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	public boolean isWord(String s) 
 	{
 	    // TODO: Implement this method
+		if (s == "") {
+			System.out.println("SPACE");
+			return false;
+		}
         char c = Character.toLowerCase(s.charAt(0));
         TrieNode currTrieNode = root;
         currTrieNode.insert(c);
@@ -142,22 +161,47 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
      */@Override
      public List<String> predictCompletions(String prefix, int numCompletions) 
      {
-    	 // TODO: Implement this method
     	 // This method should implement the following algorithm:
     	 // 1. Find the stem in the trie.  If the stem does not appear in the trie, return an
     	 //    empty list
+    	 TrieNode currentTrie = root;
+    	 TrieNode nextTrie = null;
+    	 List<String> completionsList = new ArrayList<String>();
+    	 Character c = null;
+    	 for (Character l: prefix.toCharArray()) {
+    		 c = l.toLowerCase(l);
+    		 nextTrie = currentTrie.getChild(c);
+    		 if(nextTrie == null) {
+    			 return completionsList;
+    		 }
+    		 currentTrie = nextTrie;
+    	 }
     	 // 2. Once the stem is found, perform a breadth first search to generate completions
     	 //    using the following algorithm:
-    	 //    Create a queue (LinkedList) and add the node that completes the stem to the back
+    	 //     * Create a queue (LinkedList)
+//    	 		* add the node that completes the stem to the back
     	 //       of the list.
+    	 LinkedList<TrieNode> queue = new LinkedList<TrieNode>();
+    	 queue.add(currentTrie);
     	 //    Create a list of completions to return (initially empty)
     	 //    While the queue is not empty and you don't have enough completions:
+    	 int n = 0;
+    	 while(!queue.isEmpty() && n<numCompletions) {    	 
     	 //       remove the first Node from the queue
+    		 nextTrie = queue.removeFirst();
     	 //       If it is a word, add it to the completions list
+    		 if(nextTrie.endsWord()) {
+    			 completionsList.add(nextTrie.getText());
+    			 n++;
+    		 }
     	 //       Add all of its child nodes to the back of the queue
+    		 for (Character nextChar : nextTrie.getValidNextCharacters()) {
+    			 queue.add(nextTrie.getChild(nextChar));
+    		 }
+    	 }
     	 // Return the list of completions
     	 
-         return null;
+         return completionsList;
      }
 
  	// For debugging
